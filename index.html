@@ -1,1 +1,579 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Study Planner</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f5f7;
+  color: #222;
+}
+
+header {
+  background: #20242b;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 6px;
+}
+
+.container {
+  max-width: 750px;
+  margin: auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+input,
+select,
+textarea,
+button {
+  width: 100%;
+  padding: 11px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  background: #20242b;
+  color: white;
+  border: none;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+.task {
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+  display: flex;
+  gap: 12px;
+}
+
+.task:last-child {
+  border-bottom: none;
+}
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.delete {
+  width: auto;
+  padding: 7px 12px;
+  background: #b3261e;
+  margin-top: 8px;
+}
+
+.progress {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📚 My Study Planner</h1>
+  <div id="today"></div>
+</header>
+
+<div class="container">
+
+  <!-- ADD STUDY SESSION -->
+  <div class="card">
+
+    <h2>➕ Add Study Session</h2>
+
+    <label>Date</label>
+    <input type="date" id="date">
+
+    <label>Subject</label>
+    <select id="subject">
+      <option>Biology</option>
+      <option>Mathematics</option>
+      <option>Chemistry</option>
+      <option>Physics</option>
+      <option>English</option>
+      <option>Other</option>
+    </select>
+
+    <label>Study Time</label>
+    <input type="time" id="studyTime">
+
+    <label>Deadline</label>
+    <input type="time" id="deadline">
+
+    <label>Break (minutes)</label>
+    <input type="number" id="breakTime" value="10" min="0">
+
+    <label>Page / Unit / Task</label>
+    <input type="text" id="task" placeholder="Example: Physics Unit 1">
+
+    <label>Analysis / Notes</label>
+    <textarea
+      id="notes"
+      rows="4"
+      placeholder="What did I understand? What was difficult? What should I review?"
+    ></textarea>
+
+    <button onclick="addSession()">
+      Add Study Session
+    </button>
+
+  </div>
+
+
+  <!-- PROGRESS -->
+  <div class="card">
+
+    <div class="progress" id="progress">
+      Progress: 0%
+    </div>
+
+    <div id="sessions"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let sessions =
+  JSON.parse(localStorage.getItem("studyPlannerSessions")) || [];
+
+
+// SHOW TODAY'S DATE
+function showToday() {
+
+  const today = new Date();
+
+  document.getElementById("today").textContent =
+    today.toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+}
+
+
+// SET DEFAULT DATE
+function setDefaultDate() {
+
+  const today = new Date();
+
+  const year = today.getFullYear();
+
+  const month =
+    String(today.getMonth() + 1).padStart(2, "0");
+
+  const day =
+    String(today.getDate()).padStart(2, "0");
+
+  document.getElementById("date").value =
+    `${year}-${month}-${day}`;
+}
+
+
+// SAVE DATA
+function saveSessions() {
+
+  localStorage.setItem(
+    "studyPlannerSessions",
+    JSON.stringify(sessions)
+  );
+
+}
+
+
+// ADD SESSION
+function addSession() {
+
+  const date =
+    document.getElementById("date").value;
+
+  const subject =
+    document.getElementById("subject").value;
+
+  const studyTime =
+    document.getElementById("studyTime").value;
+
+  const deadline =
+    document.getElementById("deadline").value;
+
+  const breakTime =
+    document.getElementById("breakTime").value;
+
+  const task =
+    document.getElementById("task").value;
+
+  const notes =
+    document.getElementById("notes").value;
+
+
+  if (!date || !studyTime || !deadline || !task) {
+
+    alert(
+      "Please enter the date, study time, deadline and task."
+    );
+
+    return;
+  }
+
+
+  const newSession = {
+
+    id: Date.now(),
+
+    date: date,
+
+    subject: subject,
+
+    studyTime: studyTime,
+
+    deadline: deadline,
+
+    breakTime: breakTime,
+
+    task: task,
+
+    notes: notes,
+
+    completed: false
+
+  };
+
+
+  sessions.push(newSession);
+
+  saveSessions();
+
+  displaySessions();
+
+
+  // CLEAR FORM
+
+  document.getElementById("task").value = "";
+
+  document.getElementById("notes").value = "";
+
+}
+
+
+// COMPLETE / UNCOMPLETE SESSION
+function toggleSession(id) {
+
+  sessions = sessions.map(session => {
+
+    if (session.id === id) {
+
+      session.completed =
+        !session.completed;
+
+    }
+
+    return session;
+
+  });
+
+
+  saveSessions();
+
+  displaySessions();
+
+}
+
+
+// DELETE SESSION
+function deleteSession(id) {
+
+  if (
+    !confirm(
+      "Delete this study session?"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  sessions =
+    sessions.filter(
+      session => session.id !== id
+    );
+
+
+  saveSessions();
+
+  displaySessions();
+
+}
+
+
+// DISPLAY ALL SESSIONS
+function displaySessions() {
+
+  const container =
+    document.getElementById("sessions");
+
+  container.innerHTML = "";
+
+
+  if (sessions.length === 0) {
+
+    container.innerHTML =
+      '<div class="empty">No study sessions yet.</div>';
+
+    updateProgress();
+
+    return;
+
+  }
+
+
+  // SORT BY DATE AND TIME
+
+  const sortedSessions =
+    [...sessions].sort((a, b) => {
+
+      const first =
+        `${a.date} ${a.studyTime}`;
+
+      const second =
+        `${b.date} ${b.studyTime}`;
+
+      return first.localeCompare(second);
+
+    });
+
+
+  sortedSessions.forEach(session => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "task";
+
+
+    const checkbox =
+      document.createElement("input");
+
+    checkbox.type = "checkbox";
+
+    checkbox.className =
+      "task-check";
+
+    checkbox.checked =
+      session.completed;
+
+
+    checkbox.onclick = function() {
+
+      toggleSession(session.id);
+
+    };
+
+
+    const info =
+      document.createElement("div");
+
+    info.className = "task-info";
+
+
+    if (session.completed) {
+
+      info.classList.add("completed");
+
+    }
+
+
+    info.innerHTML = `
+
+      <strong>
+        ${escapeHTML(session.subject)}
+      </strong>
+
+      <br>
+
+      📅 ${escapeHTML(session.date)}
+
+      <br>
+
+      ⏰ Study:
+      ${escapeHTML(session.studyTime)}
+
+      →
+
+      Deadline:
+      ${escapeHTML(session.deadline)}
+
+      <br>
+
+      ☕ Break:
+      ${escapeHTML(session.breakTime)}
+      minutes
+
+      <br>
+
+      📖 Task:
+      ${escapeHTML(session.task)}
+
+      <br>
+
+      📝 Analysis:
+      ${escapeHTML(session.notes || "No notes")}
+
+    `;
+
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.textContent =
+      "Delete";
+
+    deleteButton.className =
+      "delete";
+
+
+    deleteButton.onclick = function() {
+
+      deleteSession(session.id);
+
+    };
+
+
+    info.appendChild(deleteButton);
+
+
+    div.appendChild(checkbox);
+
+    div.appendChild(info);
+
+    container.appendChild(div);
+
+  });
+
+
+  updateProgress();
+
+}
+
+
+// UPDATE PROGRESS
+function updateProgress() {
+
+  const total =
+    sessions.length;
+
+  const completed =
+    sessions.filter(
+      session => session.completed
+    ).length;
+
+
+  let percentage = 0;
+
+
+  if (total > 0) {
+
+    percentage =
+      Math.round(
+        (completed / total) * 100
+      );
+
+  }
+
+
+  document.getElementById("progress").textContent =
+
+    `Progress: ${percentage}% (${completed}/${total} completed)`;
+
+}
+
+
+// SECURITY: ESCAPE TEXT
+function escapeHTML(text) {
+
+  return String(text)
+
+    .replace(/&/g, "&amp;")
+
+    .replace(/</g, "&lt;")
+
+    .replace(/>/g, "&gt;")
+
+    .replace(/"/g, "&quot;")
+
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// START APP
+showToday();
+
+setDefaultDate();
+
+displaySessions();
+
+</script>
+
+</body>
+        </html>
