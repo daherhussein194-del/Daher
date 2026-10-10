@@ -11,12 +11,12 @@
 <meta name="apple-mobile-web-app-title" content="Study Planner">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbf6ff;--ink:#24446d;--panel:#fff;--line:#b8a2ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#fbf6ff;--ink:#24446d;--panel:#fff;--line:#b8a2ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1730;--ink:#dce6ff;--panel:#262042}}
 :root[data-theme="dark"]{--bg:#1b1730;--ink:#dce6ff;--panel:#262042}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',Arial,sans-serif;font-size:14px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',Arial,sans-serif;font-size:14px;padding-bottom:90px}
 .wrap{max-width:1200px;margin:auto;padding:0 10px 20px}
 .bar{height:8px;background:linear-gradient(90deg,#ff7aa8 0 14%,#ffa04a 14% 28%,#ffd84a 28% 43%,#5fd67a 43% 57%,#3fb4f0 57% 71%,#7f8cff 71% 85%,#c47bf5 85%)}
 .hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px;flex-wrap:wrap}
@@ -77,6 +77,11 @@ ul.rm li::marker{font-size:1.2em}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding-bottom:4px}
 .tab{flex:none;border:2px solid var(--c);background:var(--bg2);color:#2c3e6b;border-radius:999px;padding:8px 14px;font:800 14px 'Nunito',Arial,sans-serif;cursor:pointer}
 .tab.on{background:var(--c);color:#fff}
+.savebar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(90deg,#7b5ce8,#3b8ee8 55%,#18bdb0);z-index:10}
+.savebar button{flex:1;max-width:260px;border:0;border-radius:12px;padding:12px;font:800 16px 'Nunito',Arial,sans-serif;cursor:pointer;background:#fff;color:#5a3fb5}
+.savebar #saveBtn{background:#ffd84a;color:#4a3300}
+.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#24446d;color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:11}
+.toast.on{opacity:1}
 @media(max-width:700px){.hand,.deco{display:none}.bot,.bot2{grid-template-columns:1fr}
 .inner{min-width:0}.cols{display:none}
 .meta{grid-template-columns:auto 1fr}.meta>span{grid-column:1/-1}
@@ -143,6 +148,12 @@ ul.rm li::marker{font-size:1.2em}
 </div></div>
 </div>
 
+<div class="savebar">
+  <button id="saveBtn">💾 Save</button>
+  <button id="clearBtn">🗑 Clear all</button>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
 const S={chem:'Chemistry',math:'Mathematics',bio:'Biology',phys:'Physics',rev:'Review / Past Qs',lr:'Light Review',weak:'Weak Topics',rest:'Rest Day'};
 const D=[
@@ -177,6 +188,31 @@ document.getElementById('ov').insertAdjacentHTML('beforeend',o);
 document.querySelectorAll('td.sr').forEach(td=>td.onclick=e=>{const i=+e.target.dataset.i;if(!i)return;const on=td.dataset.v==i?0:i;td.dataset.v=on;[...td.children].forEach((s,j)=>s.textContent=j<on?'★':'☆');});
 document.querySelectorAll('.goal-row i').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
 document.querySelectorAll('.st').forEach(s=>{if(s.textContent!=='–')s.onclick=()=>s.textContent=s.textContent==='☆'?'★':'☆';});
+
+/* ---------- SAVE / LOAD ---------- */
+const KEY='studyPlanner_v1';
+const $$=q=>[...document.querySelectorAll(q)];
+function collect(){return{
+  v:$$('input').map(i=>i.type==='checkbox'?i.checked:i.value),
+  st:$$('.st').map(s=>s.textContent),
+  gi:$$('.goal-row i').map(i=>i.classList.contains('on')),
+  rt:$$('td.sr').map(t=>+t.dataset.v||0)
+};}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
+function save(msg){try{localStorage.setItem(KEY,JSON.stringify(collect()));if(msg)toast('Saved ✓');}catch(e){if(msg)toast('Could not save');}}
+function load(){try{
+  const d=JSON.parse(localStorage.getItem(KEY));if(!d)return;
+  $$('input').forEach((i,n)=>{const x=d.v[n];if(x===undefined)return;if(i.type==='checkbox')i.checked=!!x;else i.value=x;});
+  $$('.st').forEach((s,n)=>{if(d.st[n]!==undefined)s.textContent=d.st[n];});
+  $$('.goal-row i').forEach((i,n)=>i.classList.toggle('on',!!d.gi[n]));
+  $$('td.sr').forEach((t,n)=>{const v=d.rt[n]||0;t.dataset.v=v;[...t.children].forEach((s,j)=>s.textContent=j<v?'★':'☆');});
+}catch(e){}}
+load();
+let tmr;const auto=()=>{clearTimeout(tmr);tmr=setTimeout(()=>save(false),400);};
+document.addEventListener('input',auto);
+document.addEventListener('click',auto);
+document.getElementById('saveBtn').onclick=()=>save(true);
+document.getElementById('clearBtn').onclick=()=>{if(confirm('Clear everything and start a new week?')){try{localStorage.removeItem(KEY);}catch(e){}location.reload();}};
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
