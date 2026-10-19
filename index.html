@@ -11,212 +11,292 @@
 <meta name="apple-mobile-web-app-title" content="Study Planner">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbf6ff;--ink:#24446d;--panel:#fff;--line:#b8a2ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1730;--ink:#dce6ff;--panel:#262042}}
-:root[data-theme="dark"]{--bg:#1b1730;--ink:#dce6ff;--panel:#262042}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{--bg:#fbf6ff;--ink:#24446d;--panel:#fff;--muted:#8a7bb5;--desk:#e9e0f7;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1730;--ink:#dce6ff;--panel:#262042;--muted:#a898d8;--desk:#120f22}}
+:root[data-theme="dark"]{--bg:#1b1730;--ink:#dce6ff;--panel:#262042;--muted:#a898d8;--desk:#120f22}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',Arial,sans-serif;font-size:14px;padding-bottom:90px}
-.wrap{max-width:1200px;margin:auto;padding:0 10px 20px}
-.bar{height:8px;background:linear-gradient(90deg,#ff7aa8 0 14%,#ffa04a 14% 28%,#ffd84a 28% 43%,#5fd67a 43% 57%,#3fb4f0 57% 71%,#7f8cff 71% 85%,#c47bf5 85%)}
-.hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px;flex-wrap:wrap}
-.hand{font-family:'Caveat',cursive;font-size:24px;line-height:1.05;color:#2a3f9a;max-width:150px}
-.note{background:#fff0b3;color:#2a3f9a;padding:12px 16px;border-radius:6px;transform:rotate(3deg);box-shadow:0 2px 6px #0002;text-align:center;font-family:'Caveat',cursive;font-size:22px;line-height:1.1}
-.mid{text-align:center;flex:1;min-width:260px}
-.mid h1{margin:0;font-size:clamp(14px,2.4vw,26px);font-weight:600;letter-spacing:.5px}
-.mid h1 i{font-style:normal;margin:0 .6em}
-.mid p{margin:8px 0 0;font-family:'Caveat',cursive;font-size:clamp(20px,3vw,30px)}
-.deco{font-size:44px}
-.scroll{overflow-x:auto}
-.inner{min-width:960px}
-.meta{border:2px solid #b57de7;border-radius:14px;padding:14px 18px;background:linear-gradient(90deg,#fde8f3,#e3ecff,#dcf7ee);display:grid;grid-template-columns:auto 1fr auto 1fr auto 1fr auto;gap:8px 10px;align-items:end;margin-bottom:14px}
-.meta b{font-weight:800}.meta input{border:0;border-bottom:1.5px solid;background:transparent;min-width:0;width:100%;padding:3px;color:var(--ink);font:inherit}
-.meta .goal{grid-column:1/-1;display:flex;gap:10px;align-items:end}
+html,body{height:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:'Nunito',Arial,sans-serif;font-size:14px;overflow:hidden;
+ padding-top:env(safe-area-inset-top,0px)}
+.app{height:100%;display:flex;flex-direction:column}
+.book{flex:1;min-height:0;perspective:1600px;padding:8px 8px 0;position:relative}
+.page{height:100%;overflow-y:auto;background:var(--bg);border-radius:6px 16px 16px 6px;position:relative;
+ box-shadow:0 6px 24px #0003,inset 10px 0 14px -10px #0003;border-left:5px solid #cdbdf0;padding-bottom:20px;
+ backface-visibility:hidden;-webkit-overflow-scrolling:touch}
+.page[hidden]{display:none}
+.bar{height:8px;background:linear-gradient(90deg,#ff7aa8 0 14%,#ffa04a 14% 28%,#ffd84a 28% 43%,#5fd67a 43% 57%,#3fb4f0 57% 71%,#7f8cff 71% 85%,#c47bf5 85%);position:sticky;top:0;z-index:2}
+.in{padding:12px 14px;max-width:760px;margin:auto}
+
+/* cover */
+.hero{text-align:center;padding:10px 0 4px}
+.hand{font-family:'Caveat',cursive;color:#2a3f9a}
+.hero .hand{font-size:26px;line-height:1.05}
+.dark-hand{color:#a9b8ff}
+.hero h1{margin:10px 0 4px;font-size:clamp(15px,4.4vw,24px);font-weight:700;line-height:1.35}
+.hero h1 i{font-style:normal;color:var(--muted);margin:0 .3em}
+.hero p{margin:0;font-family:'Caveat',cursive;font-size:24px}
+.note{background:#fff0b3;color:#2a3f9a;padding:10px 14px;border-radius:6px;transform:rotate(2deg);box-shadow:0 2px 6px #0002;text-align:center;font-family:'Caveat',cursive;font-size:21px;line-height:1.1;margin:14px auto 4px;width:max-content;max-width:90%}
+.meta{border:2px solid #b57de7;border-radius:14px;padding:12px 14px;background:linear-gradient(90deg,#fde8f3,#e3ecff,#dcf7ee);display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin:14px 0;color:#24446d}
+.meta b{font-weight:800}
 .c1{color:#7a4fd0}.c2{color:#2f7de1}.c3{color:#e8336d}.c4{color:#12906a}.c5{color:#f08a1c}
-.cols{display:grid;grid-template-columns:110px 230px 80px 100px 200px 1fr 50px 1fr;text-align:center;color:#fff;font-weight:800;border-radius:14px;padding:10px 0;background:linear-gradient(90deg,#7b5ce8,#3b8ee8 55%,#18bdb0);margin-bottom:10px}
-.cols small{display:block;font-weight:400;font-size:11px;opacity:.9}
-.day{display:grid;grid-template-columns:110px 1fr;border:2px solid var(--c);border-radius:14px;background:var(--bg2);margin-bottom:10px;overflow:hidden}
-.dn{background:var(--d);display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:800;font-size:16px;color:#2c3e6b;border-right:2px solid var(--c)}
-.dn small{font-weight:400;font-size:12px;margin-top:50px;margin-bottom:-40px}
-.r{display:grid;grid-template-columns:230px 80px 100px 200px 1fr 50px 1fr;align-items:center;padding:4px 0}
-.pill{margin:0 8px 0 6px;border-radius:8px;padding:7px 10px;font-weight:800;border:1px solid #0001;background:var(--p);color:var(--t);display:flex;align-items:center;gap:8px}
-.pill:before{content:"";width:13px;height:13px;border-radius:50%;background:var(--o)}
-.st{text-align:center;color:#f2b800;font-size:18px}
-.ln{display:inline-block;width:56px;border:0;border-bottom:1.5px solid var(--c);background:transparent;height:24px;padding:0 2px;text-align:center;color:var(--ink);font:inherit;outline:none;border-radius:0;vertical-align:bottom}
-.ln:focus,.tp:focus,.nt:focus{background:#ffffff80}
-.tm{text-align:center;color:#8a7bb5}.pg{color:#8a7bb5}
-.tp,.nt{border:0;border-bottom:1.5px solid var(--c);background:transparent;height:26px;margin:6px 12px;width:calc(100% - 24px);color:var(--ink);font:inherit;outline:none;border-radius:0}
-.ck{width:20px;height:20px;border:2.5px solid var(--c);border-radius:5px;margin:auto;background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer}
-.ck:checked{background:var(--c)}
-.chem{--p:#ffc6df;--t:#b3124a;--o:#e8336d}.math{--p:#b7ddff;--t:#1b4f9c;--o:#2f7de1}.bio{--p:#b9efb0;--t:#1d7a2e;--o:#2fb344}.phys{--p:#ffd09a;--t:#b35a00;--o:#f08a1c}.rev{--p:#ffeb92;--t:#8a6500;--o:#f2c200}.weak{--p:#ffd0b8;--t:#b34a1d;--o:#f26a3d}.rest{--p:#d8caff;--t:#5a3fb5;--o:#8b5ce8}
-.bot{display:grid;grid-template-columns:1fr 1.1fr 1.1fr;gap:14px;margin-top:14px}
-.bot2{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
-.box{border:2.5px solid;border-radius:16px;padding:14px 16px}
-.box h3{margin:0 0 10px;font-size:17px}
+input[type=text],input[type=number],input[type=date]{color:#1b3a6b;-webkit-text-fill-color:#1b3a6b;caret-color:#1b3a6b;font:700 16px 'Nunito',Arial,sans-serif;border:0;border-bottom:1.5px solid var(--c,#7a4fd0);background:transparent;border-radius:0;min-width:0;width:100%;padding:4px 2px;outline:none}
+input:focus-visible,button:focus-visible,.tick:focus-visible,.star:focus-visible{outline:3px solid #7f8cff;outline-offset:2px}
+input[readonly]{opacity:.85}
+.box{border:2.5px solid;border-radius:16px;padding:12px 14px;margin:14px 0}
+.box h3{margin:0 0 8px;font-size:17px}
 .g1{border-color:#b57de7;background:linear-gradient(#f6e7f6,#efe4fb);color:#6d3fc4}
 .g2{border-color:#3fa8e8;background:linear-gradient(#d9f3f8,#cfe9fb);color:#1b6fb5}
 .g3{border-color:#f5a623;background:linear-gradient(#ffe7c9,#ffe0e6);color:#c4560a}
 .g4{border-color:#f5a623;background:linear-gradient(90deg,#fff3c4,#ffe4ea);color:#c4560a}
-.g5{border-color:#3fc0b0;background:linear-gradient(135deg,#c9f1e4,#bcd7f8);color:#12806a;text-align:center;display:flex;flex-direction:column;justify-content:center;font-size:22px;font-weight:800;font-style:italic}
+.g5{border-color:#3fc0b0;background:linear-gradient(135deg,#c9f1e4,#bcd7f8);color:#12806a;text-align:center;font-size:22px;font-weight:800;font-style:italic}
 .goal-row{display:flex;align-items:center;gap:8px;margin:9px 0}
-.goal-row i{width:24px;height:24px;border:2.5px solid;border-radius:6px;flex:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px;font-weight:800}
-.goal-row i.on{background:currentColor}
-.goal-row i.on:after{content:"✓";color:#fff}
-.goal-row input{flex:1;min-width:0;border:0;border-bottom:1.5px solid;background:transparent;height:26px;color:var(--ink);font:inherit;outline:none;border-radius:0}
-table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:12px}
+.tick{width:26px;height:26px;border:2.5px solid;border-radius:6px;flex:none;cursor:pointer;background:#fff;display:flex;align-items:center;justify-content:center;padding:0;color:inherit;font:800 16px sans-serif}
+.tick[aria-checked=true]{background:currentColor}
+.tick[aria-checked=true]:after{content:"✓";color:#fff}
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0 0}
+.toc button{border:2px solid var(--c);background:var(--bg2);color:#2c3e6b;border-radius:12px;padding:10px;font:800 15px 'Nunito',Arial,sans-serif;cursor:pointer;text-align:left;display:flex;justify-content:space-between;gap:6px}
+.toc small{font-weight:700;opacity:.7}
+.tools{display:flex;gap:8px;margin-top:14px}
+.tools button{flex:1;border:2px solid #b57de7;background:var(--panel);color:var(--ink);border-radius:12px;padding:10px;font:800 14px 'Nunito',Arial,sans-serif;cursor:pointer}
+
+/* day page */
+.dayhead{background:var(--d);border-bottom:2px solid var(--c);padding:14px;text-align:center;color:#2c3e6b}
+.dayhead h2{margin:0;font-size:26px;font-weight:800}
+.dayhead small{display:block;font-weight:700;margin-top:2px}
+.prog{height:8px;border-radius:99px;background:#fff9;margin:10px auto 0;max-width:300px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--c);transition:width .3s}
+.dbody{background:var(--bg2);padding:12px 14px 18px;border-bottom:2px solid var(--c)}
+.r{background:var(--panel);border:2px solid var(--c);border-radius:14px;padding:10px 12px;margin:0 auto 10px;max-width:760px;display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center}
+.r.done{opacity:.72}
+.pill{border-radius:8px;padding:7px 10px;font-weight:800;border:1px solid #0001;background:var(--p);color:var(--t);display:flex;align-items:center;gap:8px}
+.pill:before{content:"";width:13px;height:13px;border-radius:50%;background:var(--o)}
+.star{border:0;background:none;font-size:22px;color:#f2b800;cursor:pointer;padding:0 4px;line-height:1}
+.ck{grid-column:2;grid-row:1;width:30px;height:30px;border:2.5px solid var(--c);border-radius:7px;background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer;margin:auto}
+.ck:checked{background:var(--c)}
+.ck:checked:after{content:"✓";color:#fff;display:block;text-align:center;font:800 20px/25px sans-serif}
+.row2{grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--muted);font-weight:700}
+.row2 input{width:70px;text-align:center;--c:var(--c)}
+.row2 .sp{flex:1}
+.r .tp,.r .nt{grid-column:1/-1}
+.lab{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:-4px;grid-column:1/-1}
+.chem{--p:#ffc6df;--t:#b3124a;--o:#e8336d}.math{--p:#b7ddff;--t:#1b4f9c;--o:#2f7de1}.bio{--p:#b9efb0;--t:#1d7a2e;--o:#2fb344}.phys{--p:#ffd09a;--t:#b35a00;--o:#f08a1c}.rev{--p:#ffeb92;--t:#8a6500;--o:#f2c200}.weak{--p:#ffd0b8;--t:#b34a1d;--o:#f26a3d}.rest{--p:#d8caff;--t:#5a3fb5;--o:#8b5ce8}
+.restmsg{text-align:center;color:var(--muted);font-family:'Caveat',cursive;font-size:24px;padding:4px 0}
+
+/* summary */
+table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:13px}
 th{text-align:left;font-weight:800}
-td.s{border-radius:6px;padding:5px 8px;font-weight:800;background:var(--p);color:var(--t);border:1px solid #0001}
-td.b{background:#fff;border:1px solid #f0b0c8;border-radius:6px;height:26px}
-td.b.sr{color:#f2c200;white-space:nowrap;text-align:center;letter-spacing:2px;cursor:pointer;font-size:15px}
-td.b input{width:100%;height:100%;min-width:0;border:0;background:transparent;text-align:center;font:inherit;color:#24446d;outline:none}
-.st{cursor:pointer}
-input[type=text],input[type=number],input[type=date]{color:#1b3a6b!important;-webkit-text-fill-color:#1b3a6b;caret-color:#1b3a6b;font-weight:700;font-size:15px}
-.win{color:#128a4a;font-size:13px}.win input{display:block;width:100%;border:0;border-bottom:1.5px solid #3fb870;background:transparent;height:28px;margin-bottom:8px;color:var(--ink);font:inherit;outline:none;border-radius:0}
-ul.rm{margin:0;padding-left:16px;font-size:13px;color:#4a4a6a;line-height:1.55}
-ul.rm li::marker{font-size:1.2em}
-.tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding-bottom:4px}
-.tab{flex:none;border:2px solid var(--c);background:var(--bg2);color:#2c3e6b;border-radius:999px;padding:8px 14px;font:800 14px 'Nunito',Arial,sans-serif;cursor:pointer}
-.tab.on{background:var(--c);color:#fff}
-.savebar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(90deg,#7b5ce8,#3b8ee8 55%,#18bdb0);z-index:10}
-.savebar button{flex:1;max-width:260px;border:0;border-radius:12px;padding:12px;font:800 16px 'Nunito',Arial,sans-serif;cursor:pointer;background:#fff;color:#5a3fb5}
-.savebar #saveBtn{background:#ffd84a;color:#4a3300}
-.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#24446d;color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:11}
+td.s{border-radius:6px;padding:6px 8px;font-weight:800;background:var(--p);color:var(--t);border:1px solid #0001}
+td.b{background:#fff;border:1px solid #f0b0c8;border-radius:6px;height:30px;text-align:center;color:#1b3a6b;font-weight:800}
+td.sr{white-space:nowrap;letter-spacing:1px;color:#f2c200;cursor:pointer;font-size:16px}
+.win{color:#128a4a}.win input{display:block;width:100%;border-bottom-color:#3fb870;margin-bottom:8px}
+input.rmi{color:#4a4a6a;-webkit-text-fill-color:#4a4a6a;--c:#f5a623;font-size:16px}
+ul.rm{margin:0;padding-left:18px;color:#4a4a6a;line-height:1.6;font-size:14px}
+
+/* nav */
+.nav{display:flex;align-items:center;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(90deg,#7b5ce8,#3b8ee8 55%,#18bdb0)}
+.nav button{border:0;border-radius:12px;background:#fff;color:#5a3fb5;font:800 15px 'Nunito',Arial,sans-serif;padding:11px 14px;cursor:pointer;min-width:84px}
+.nav button:disabled{opacity:.4;cursor:default}
+.dots{flex:1;display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.dots button{min-width:0;width:12px;height:12px;padding:0;border-radius:50%;background:#fff6}
+.dots button.on{background:#fff;transform:scale(1.35)}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#24446d;color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:11}
 .toast.on{opacity:1}
-@media(max-width:700px){.hand,.deco{display:none}.bot,.bot2{grid-template-columns:1fr}
-.inner{min-width:0}.cols{display:none}
-.meta{grid-template-columns:auto 1fr}.meta>span{grid-column:1/-1}
-.day{grid-template-columns:1fr}.dn{padding:10px;border-right:0;border-bottom:2px solid var(--c)}.dn small{margin:4px 0 0}
-.r{grid-template-columns:1fr 1fr 44px;grid-template-areas:"pill pill ck" "st tm tm" "pg pg pg" "tp tp tp" "nt nt nt";padding:10px 0;border-bottom:1px dashed var(--c)}
-.r .pill{grid-area:pill}.r .st{grid-area:st;text-align:left;padding-left:12px}.r .tm{grid-area:tm;text-align:left}.r .pg{grid-area:pg;padding:6px 12px}.r .tp{grid-area:tp}.r .ck{grid-area:ck}.r .nt{grid-area:nt}}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+
+.gearrow{display:flex;justify-content:flex-end}
+.gear{width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:#15151d;color:#fff;font-size:22px;cursor:pointer;line-height:1}
+.page.cover{background:#0b0b10;color:#fff;border-left-color:#fff}
+.cover .hero .hand{color:#fff}.cover .hero p{color:#ececf5}.cover .hero h1 i{color:#8a8a99}
+.cover .meta{background:#15151d;border-color:#fff;color:#fff}
+.cover .c1{color:#c2a8ff}.cover .c2{color:#7dbcff}.cover .c3{color:#ff8ab3}.cover .c4{color:#55e5b5}.cover .c5{color:#ffbb5c}
+.cover input[type=text],.cover input[type=number],.cover input[type=date]{color:#fff;-webkit-text-fill-color:#fff;caret-color:#fff}
+.cover input[type=date]{color-scheme:dark}
+.cover .goal-row input{--c:#fff}
+.cover .box.g1{background:#15151d;border-color:#fff;color:#fff}.cover .box h3{color:#fff}
+.cover .toc button{background:#15151d;color:#fff}
+.tools button.savebtn{border:0;background:#ffd84a;color:#4a3300;padding:14px;font-size:17px}
+.sbtn{display:block;width:100%;margin:8px 0;border:2px solid currentColor;background:var(--panel);color:#24446d;border-radius:12px;padding:12px;font:800 15px 'Nunito',Arial,sans-serif;cursor:pointer}
+.stxt{margin:0 0 8px;color:#24446d;line-height:1.5}.stxt.small{font-size:12px;opacity:.8}
 </style>
 </head>
 <body>
-<div class="bar"></div>
-<div class="wrap">
-<header class="hero">
-  <div class="hand">Small steps daily… Big results later!</div>
-  <div class="deco">📚</div>
-  <div class="mid">
-    <h1>CHEMISTRY<i>•</i>MATHEMATICS<i>•</i>BIOLOGY<i>•</i>PHYSICS</h1>
-    <p>Plan ✓ &nbsp; Study ✓ &nbsp; Improve ✓ &nbsp; Succeed ✓</p>
-  </div>
-  <div class="deco">✏️</div>
-  <div class="note">👑<br>Discipline today, freedom tomorrow.</div>
-</header>
-
-<div class="scroll"><div class="inner">
-<section class="meta">
-  <b class="c1">Start Date:</b><input type="date" style="border-color:#7a4fd0">
-  <b class="c2">Week:</b><input type="text" style="border-color:#2f7de1">
-  <b class="c3">Exam Date:</b><input type="date" style="border-color:#e8336d">
-  <span><b class="c4">Days Left:</b> <input type="text" style="border-color:#12906a;width:90px"> <span class="c4">days to go!</span></span>
-  <div class="goal"><b class="c5">Goal:</b><input type="text" style="border-color:#f08a1c"></div>
-</section>
-
-<div class="tabs" id="tabs"></div>
-<div class="cols"><div>Day</div><div>Subject</div><div>Priority<small>hardest first</small></div><div>Time<small>(minutes)</small></div><div>Pages<small>(From – To)</small></div><div>Unit / Topic</div><div>✓</div><div>Notes</div></div>
-<div id="days"></div>
-
-<div class="bot">
-  <section class="box g1"><h3>Weekly Goals</h3>
-    <div class="goal-row" style="color:#e8336d"><i></i>Chemistry:<input type="text"></div>
-    <div class="goal-row" style="color:#2f7de1"><i></i>Mathematics:<input type="text"></div>
-    <div class="goal-row" style="color:#2fb344"><i></i>Biology:<input type="text"></div>
-    <div class="goal-row" style="color:#f08a1c"><i></i>Physics:<input type="text"></div>
-  </section>
-  <section class="box g2"><h3>Study Time Overview</h3>
-    <table id="ov"><tr><th>Subject</th><th>Total Time</th><th>Pages Done</th><th>Rating</th></tr></table>
-  </section>
-  <section class="box g3"><h3>Biggest Win &amp; Fix Next Week</h3>
-    <div class="win">★ Biggest win this week:<input type="text"><input type="text"></div>
-    <div class="win" style="color:#12806a">→ Fix next week:<input type="text"></div>
-  </section>
+<div class="app">
+  <div class="book" id="book"></div>
+  <nav class="nav" aria-label="Pages">
+    <button id="prev" aria-label="Previous page">‹ Back</button>
+    <div class="dots" id="dots"></div>
+    <button id="next" aria-label="Next page">Next ›</button>
+  </nav>
 </div>
-<div class="bot2">
-  <section class="box g4"><h3>Quick Reminders</h3>
-    <ul class="rm">
-      <li style="color:#e8336d"><span style="color:#4a4a6a">Start with your hardest subject (marked with a star) while energy is high.</span></li>
-      <li style="color:#2f7de1"><span style="color:#4a4a6a">Take short breaks (5–15 min).</span></li>
-      <li style="color:#2fb344"><span style="color:#4a4a6a">Don’t skip difficult topics.</span></li>
-      <li style="color:#f08a1c"><span style="color:#4a4a6a">Use the Review slot daily – revisiting makes it stick.</span></li>
-      <li style="color:#8b5ce8"><span style="color:#4a4a6a">Stay hydrated, sleep well, and keep Sunday for rest.</span></li>
-      <li style="color:#12906a"><span style="color:#4a4a6a">You can do it!</span></li>
-    </ul>
-  </section>
-  <section class="box g5"><div>Progress<br>not perfection.</div><div style="color:#f5a623;font-size:16px;margin-top:10px">✦</div></section>
-</div>
-</div></div>
-</div>
-
-<div class="savebar">
-  <button id="saveBtn">💾 Save</button>
-  <button id="clearBtn">🗑 Clear all</button>
-</div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 const S={chem:'Chemistry',math:'Mathematics',bio:'Biology',phys:'Physics',rev:'Review / Past Qs',lr:'Light Review',weak:'Weak Topics',rest:'Rest Day'};
+const SUB4=[['chem','Chemistry'],['math','Mathematics'],['bio','Biology'],['phys','Physics']];
 const D=[
- ['Monday','#8b5ce8','#d8caff','#f2edff',[['chem',1],['math',1],['rev',0]]],
- ['Tuesday','#3b8ee8','#b7ddff','#eaf5ff',[['bio',1],['phys',1],['rev',0]]],
- ['Wednesday','#2fb344','#b9efb0','#edfaec',[['chem',1],['bio',1],['rev',0]]],
- ['Thursday','#f5a623','#ffe28a','#fff6dc',[['math',1],['phys',1],['rev',0]]],
- ['Friday','#ee5fa0','#ffc6df','#ffeaf3',[['chem',1],['phys',1],['rev',0]]],
- ['Saturday','#18bdb0','#a6f0e8','#e5faf8',[['math',1],['bio',1],['rev',0]]],
- ['Sunday','#8b5ce8','#d8caff','#f2edff',[['lr',1],['weak',1],['rest',0]]]
+ ['Monday','#8b5ce8','#d8caff','#f2edff',[['chem',1],['math',1]]],
+ ['Tuesday','#3b8ee8','#b7ddff','#eaf5ff',[['bio',1],['phys',1]]],
+ ['Wednesday','#2fb344','#b9efb0','#edfaec',[['chem',1],['bio',1]]],
+ ['Thursday','#f5a623','#ffe28a','#fff6dc',[['math',1],['phys',1]]],
+ ['Friday','#ee5fa0','#ffc6df','#ffeaf3',[['chem',1],['phys',1]]],
+ ['Saturday','#18bdb0','#a6f0e8','#e5faf8',[['lr',1],['weak',1]]],
+ ['Sunday','#8b5ce8','#d8caff','#f2edff',[['math',1],['bio',1]]]
 ];
 const cls=k=>k==='lr'?'rev':k;
-let h='';
-D.forEach(([n,c,d,b,rows])=>{
-  h+=`<div class="day" style="--c:${c};--d:${d};--bg2:${b}"><div class="dn">${n}${n==='Sunday'?'<small>Rest day</small>':''}</div><div>`;
+const $=q=>document.querySelector(q),$$=q=>[...document.querySelectorAll(q)];
+const goals=SUB4.map(([k,n],i)=>`<div class="goal-row" style="color:${['#e8336d','#2f7de1','#2fb344','#f08a1c'][i]}"><button class="tick" role="checkbox" aria-checked="false" aria-label="${n} goal done"></button>${n}:<input type="text" aria-label="${n} goal"></div>`).join('');
+
+/* ---- build pages ---- */
+let pages=[];
+pages.push(`<div class="bar"></div><div class="in"><div class="gearrow"><button class="gear" data-go="9" aria-label="Settings">⚙</button></div>
+ <header class="hero"><div class="hand">Small steps daily… Big results later!</div>
+ <h1><span style="color:#ff7aa8">CHEMISTRY</span><i>•</i><span style="color:#6db3ff">MATHEMATICS</span><i>•</i><span style="color:#5fd67a">BIOLOGY</span><i>•</i><span style="color:#ffa04a">PHYSICS</span></h1>
+ <p>Plan ✓ &nbsp;Study ✓ &nbsp;Improve ✓ &nbsp;Succeed ✓</p>
+ <div class="note">👑<br>Discipline today, freedom tomorrow.</div></header>
+ <section class="meta">
+  <b class="c1">Start Date:</b><input type="date" id="sd" style="--c:#7a4fd0">
+  <b class="c2">Week:</b><input type="text" style="--c:#2f7de1">
+  <b class="c3">Exam Date:</b><input type="date" id="ed" style="--c:#e8336d">
+  <b class="c4">Days Left:</b><input type="text" id="dl" readonly aria-label="days left until exam" placeholder="Pick the exam date" style="--c:#12906a">
+  <b class="c5">Goal:</b><input type="text" style="--c:#f08a1c">
+ </section>
+ <section class="box g1"><h3>Weekly Goals</h3>${goals}</section>
+ <div class="toc" id="toc"></div>
+ <div class="tools"><button id="saveBtn" class="savebtn">💾 Save</button></div>
+</div>`);
+
+D.forEach(([n,c,d,b,rows],di)=>{
+  let h=`<div class="bar" style="background:${c}"></div><div style="--c:${c};--d:${d};--bg2:${b}"><div class="dayhead"><h2>${n}</h2><small>${n==='Saturday'?'Rest day – keep it light':'Day '+(di+1)+' of 7'}</small><div class="prog"><i id="pg${di}"></i></div></div><div class="dbody">`;
   rows.forEach(([k,s])=>{
     const rest=k==='rest';
-    h+=`<div class="r"><div class="pill ${cls(k)}">${S[k]}</div><div class="st">${s?'☆':'–'}</div><div class="tm"><input class="ln" type="number" inputmode="numeric" min="0" aria-label="minutes"> min</div><div class="pg">${rest?'No study – recharge!':'Page <input class="ln" type="number" inputmode="numeric" min="0" aria-label="from page"> → <input class="ln" type="number" inputmode="numeric" min="0" aria-label="to page">'}</div><input class="tp" type="text" aria-label="unit or topic"><input type="checkbox" class="ck" aria-label="done"><input class="nt" type="text" aria-label="notes"></div>`;
+    h+=`<div class="r" data-day="${di}" data-sub="${k}"><div class="pill ${cls(k)}">${S[k]}</div><input type="checkbox" class="ck" aria-label="${S[k]} done">`+
+    (rest?`<div class="restmsg" style="grid-column:1/-1">No study – recharge!</div><input type="number" class="mn" hidden>`:
+    `<div class="row2">${s?'<button class="star" aria-label="Hardest subject marker" aria-pressed="false">☆</button>':''}<span class="sp"></span><input class="mn" type="number" inputmode="numeric" min="0" aria-label="minutes"> min</div>
+     <div class="row2">Page <input class="pf" type="number" inputmode="numeric" min="0" aria-label="from page"> → <input class="pt" type="number" inputmode="numeric" min="0" aria-label="to page"></div>
+     <input class="tp" type="text" placeholder="Unit / topic" aria-label="unit or topic">
+     <input class="nt" type="text" placeholder="Notes" aria-label="notes">`)+`</div>`;
   });
-  h+='</div></div>';
+  h+=`</div></div>`;
+  pages.push(h);
 });
-document.getElementById('days').innerHTML=h;
-const dayEls=[...document.querySelectorAll('.day')],tabs=document.getElementById('tabs'),today=(new Date().getDay()+6)%7;
-D.forEach(([n,c,d,b],i)=>{const t=document.createElement('button');t.className='tab';t.style.cssText=`--c:${c};--bg2:${b}`;t.textContent=n.slice(0,3)+(i===today?' • Today':'');t.onclick=()=>show(i);tabs.appendChild(t);});
-function show(i){dayEls.forEach((e,j)=>e.style.display=j===i?'':'none');[...tabs.children].forEach((t,j)=>t.classList.toggle('on',j===i));}
-show(today);
-let o='';
-[['chem','Chemistry'],['math','Mathematics'],['bio','Biology'],['phys','Physics']].forEach(([k,n])=>{
-  o+=`<tr class="${k}"><td class="s">${n}</td><td class="b"><input type="text" inputmode="numeric" aria-label="total time"></td><td class="b"><input type="text" inputmode="numeric" aria-label="pages done"></td><td class="b sr">${[1,2,3,4,5].map(i=>`<span data-i="${i}">☆</span>`).join('')}</td></tr>`;
-});
-document.getElementById('ov').insertAdjacentHTML('beforeend',o);
-document.querySelectorAll('td.sr').forEach(td=>td.onclick=e=>{const i=+e.target.dataset.i;if(!i)return;const on=td.dataset.v==i?0:i;td.dataset.v=on;[...td.children].forEach((s,j)=>s.textContent=j<on?'★':'☆');});
-document.querySelectorAll('.goal-row i').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
-document.querySelectorAll('.st').forEach(s=>{if(s.textContent!=='–')s.onclick=()=>s.textContent=s.textContent==='☆'?'★':'☆';});
 
-/* ---------- SAVE / LOAD ---------- */
-const KEY='studyPlanner_v1';
-const $$=q=>[...document.querySelectorAll(q)];
-function collect(){return{
-  v:$$('input').map(i=>i.type==='checkbox'?i.checked:i.value),
-  st:$$('.st').map(s=>s.textContent),
-  gi:$$('.goal-row i').map(i=>i.classList.contains('on')),
-  rt:$$('td.sr').map(t=>+t.dataset.v||0)
-};}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
-function save(msg){try{localStorage.setItem(KEY,JSON.stringify(collect()));if(msg)toast('Saved ✓');}catch(e){if(msg)toast('Could not save');}}
-function load(){try{
-  const d=JSON.parse(localStorage.getItem(KEY));if(!d)return;
-  $$('input').forEach((i,n)=>{const x=d.v[n];if(x===undefined)return;if(i.type==='checkbox')i.checked=!!x;else i.value=x;});
-  $$('.st').forEach((s,n)=>{if(d.st[n]!==undefined)s.textContent=d.st[n];});
-  $$('.goal-row i').forEach((i,n)=>i.classList.toggle('on',!!d.gi[n]));
-  $$('td.sr').forEach((t,n)=>{const v=d.rt[n]||0;t.dataset.v=v;[...t.children].forEach((s,j)=>s.textContent=j<v?'★':'☆');});
-}catch(e){}}
-load();
-let tmr;const auto=()=>{clearTimeout(tmr);tmr=setTimeout(()=>save(false),400);};
-document.addEventListener('input',auto);
-document.addEventListener('click',auto);
-document.getElementById('saveBtn').onclick=()=>save(true);
-document.getElementById('clearBtn').onclick=()=>{if(confirm('Clear everything and start a new week?')){try{localStorage.removeItem(KEY);}catch(e){}location.reload();}};
+pages.push(`<div class="bar"></div><div class="in">
+ <section class="box g2"><h3>Study Time Overview</h3><table id="ov"><tr><th>Subject</th><th>Time</th><th>Pages</th><th>Rating</th></tr>
+ ${SUB4.map(([k,n])=>`<tr class="${k}"><td class="s">${n}</td><td class="b" data-t="${k}">0 min</td><td class="b" data-p="${k}">0</td><td class="b sr" data-r="${k}" aria-label="${n} rating">${'<span>☆</span>'.repeat(5)}</td></tr>`).join('')}</table></section>
+ <section class="box g3"><h3>Biggest Win &amp; Fix Next Week</h3>
+  <div class="win">★ Biggest win this week:<input type="text" aria-label="biggest win"><input type="text" aria-label="biggest win, line 2"></div>
+  <div class="win" style="color:#12806a">→ Fix next week:<input type="text" aria-label="fix next week"></div></section>
+ <section class="box g4"><h3>Quick Reminders</h3><p style="margin:0 0 6px;font-size:12px;opacity:.8">Tap a line to write your own.</p><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="Start with your hardest subject (marked with a star) while energy is high." aria-label="reminder 1"></div><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="Take short breaks (5–15 min)." aria-label="reminder 2"></div><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="Don’t skip difficult topics." aria-label="reminder 3"></div><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="Revisit yesterday’s notes before starting something new." aria-label="reminder 4"></div><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="Stay hydrated, sleep well, and keep Saturday for rest." aria-label="reminder 5"></div><div class="goal-row" style="color:#c4560a"><span aria-hidden="true">•</span><input type="text" class="rmi" value="You can do it!" aria-label="reminder 6"></div></section>
+ <section class="box g5"><div>Progress<br>not perfection.</div><div style="color:#f5a623;font-size:16px;margin-top:8px">✦</div></section>
+</div>`);
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+pages.push(`<div class="bar"></div><div class="in"><h2 style="margin:8px 0 2px">Settings</h2>
+ <section class="box g2"><h3>Account (optional)</h3>
+  <p id="acctTxt" class="stxt"></p>
+  <div id="gbtn"></div>
+  <button class="sbtn" id="gFallback">Continue with Google</button>
+  <button class="sbtn" id="signOut" hidden>Sign out</button>
+  <p class="stxt small">Signing in is optional. The planner works fully without it, and your data stays on this device.</p></section>
+ <section class="box g1"><h3>Appearance</h3><button class="sbtn" id="themeBtn">🌓 Light / Dark</button></section>
+ <section class="box g3"><h3>Data</h3><p class="stxt">Start a new week. This clears the days, summary and win/fix notes. Your weekly goals text and reminders stay.</p><button class="sbtn" id="clearBtn">🗑 New week</button></section>
+</div>`);
+
+const names=['Cover',...D.map(d=>d[0]),'Summary','Settings'];
+const book=$('#book');
+pages.forEach((h,i)=>{const p=document.createElement('section');p.className='page'+(i===0?' cover':'');p.hidden=i!==0;p.setAttribute('aria-label',names[i]);p.innerHTML=h;book.appendChild(p);});
+const P=$$('.page');
+$('#toc').innerHTML=D.map(([n,c,d,b],i)=>`<button style="--c:${c};--bg2:${b}" data-go="${i+1}">${n}<small id="tc${i}"></small></button>`).join('')+`<button style="--c:#3fa8e8;--bg2:#e6f4ff" data-go="8">Summary<small>Totals</small></button>`;
+$('#dots').innerHTML=names.map((n,i)=>`<button data-go="${i}" aria-label="${n}"></button>`).join('');
+
+/* ---- page flip ---- */
+let cur=0,busy=false;
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function go(i){
+  i=Math.max(0,Math.min(P.length-1,i));
+  if(i===cur||busy)return;
+  const fwd=i>cur,from=P[cur],to=P[i];
+  const done=()=>{from.hidden=true;to.hidden=false;to.scrollTop=0;cur=i;mark();busy=false;
+    if(!reduce)to.animate([{transform:`rotateY(${fwd?90:-90}deg)`,transformOrigin:fwd?'right center':'left center'},{transform:'rotateY(0)',transformOrigin:fwd?'right center':'left center'}],{duration:240,easing:'ease-out'});};
+  if(reduce){done();return;}
+  busy=true;
+  from.style.transformOrigin=fwd?'left center':'right center';
+  from.animate([{transform:'rotateY(0)',filter:'brightness(1)'},{transform:`rotateY(${fwd?-90:90}deg)`,filter:'brightness(.7)'}],{duration:260,easing:'ease-in'}).finished.then(done,done);
 }
+function mark(){
+  $$('.dots button').forEach((b,j)=>b.classList.toggle('on',j===cur));
+  $('#prev').disabled=cur===0;$('#next').disabled=cur===P.length-1;
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go);});
+$('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
+addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);});
+let sx=0,sy=0;
+book.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+book.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6)go(cur+(dx<0?1:-1));},{passive:true});
+mark();
+const today=(new Date().getDay()+6)%7;
+
+/* ---- interactions ---- */
+$$('.star').forEach(s=>s.onclick=()=>{const on=s.textContent==='☆';s.textContent=on?'★':'☆';s.setAttribute('aria-pressed',on);});
+$$('.tick').forEach(b=>b.onclick=()=>b.setAttribute('aria-checked',b.getAttribute('aria-checked')!=='true'));
+$$('td.sr').forEach(td=>td.onclick=e=>{const i=[...td.children].indexOf(e.target);if(i<0)return;const v=+td.dataset.v===i+1?0:i+1;setRate(td,v);});
+function setRate(td,v){td.dataset.v=v;[...td.children].forEach((s,j)=>s.textContent=j<v?'★':'☆');}
+
+/* ---- auto totals ---- */
+function recalc(){
+  const t={},p={};
+  $$('.r').forEach(r=>{const k=cls(r.dataset.sub);const m=+r.querySelector('.mn').value||0,f=r.querySelector('.pf'),to=r.querySelector('.pt');
+    t[k]=(t[k]||0)+m;if(f&&f.value!==''&&to.value!==''&&+to.value>=+f.value)p[k]=(p[k]||0)+(+to.value-+f.value+1);
+    r.classList.toggle('done',r.querySelector('.ck').checked);});
+  SUB4.forEach(([k])=>{$(`[data-t=${k}]`).textContent=(t[k]||0)+' min';$(`[data-p=${k}]`).textContent=p[k]||0;});
+  D.forEach((d,i)=>{const rs=$$(`.r[data-day="${i}"]`),n=rs.filter(r=>r.querySelector('.ck').checked).length;
+    $('#pg'+i).style.width=(n/rs.length*100)+'%';$('#tc'+i).textContent=n+'/'+rs.length;});
+  const ed=$('#ed').value;$('#dl').value=ed?Math.max(0,Math.ceil((new Date(ed+'T00:00')-new Date().setHours(0,0,0,0))/864e5)):'';
+}
+
+/* ---- save / load ---- */
+const KEY='studyPlanner_v4';
+const ins=()=>$$('input');
+function collect(){return{v:ins().map(i=>i.type==='checkbox'?i.checked:i.value),st:$$('.star').map(s=>s.textContent),gi:$$('.tick').map(b=>b.getAttribute('aria-checked')==='true'),rt:$$('td.sr').map(t=>+t.dataset.v||0),th:document.documentElement.dataset.theme||''};}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
+function save(msg){try{localStorage.setItem(KEY,JSON.stringify(collect()));if(msg)toast('Saved ✓');}catch(e){if(msg)toast('Could not save');}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(!d)return;
+  ins().forEach((i,n)=>{const x=d.v[n];if(x===undefined)return;if(i.type==='checkbox')i.checked=!!x;else if(!i.readOnly)i.value=x;});
+  $$('.star').forEach((s,n)=>{if(d.st[n]){s.textContent=d.st[n];s.setAttribute('aria-pressed',d.st[n]==='★');}});
+  $$('.tick').forEach((b,n)=>b.setAttribute('aria-checked',!!d.gi[n]));
+  $$('td.sr').forEach((t,n)=>setRate(t,d.rt[n]||0));
+  if(d.th)document.documentElement.dataset.theme=d.th;
+}catch(e){}}
+load();recalc();
+const auto=()=>{recalc();save(false);};
+['input','change','click','focusout'].forEach(ev=>document.addEventListener(ev,auto));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save(false);});
+addEventListener('pagehide',()=>save(false));
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+$('#saveBtn').onclick=()=>save(true);
+$('#themeBtn').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark';save(false);};
+$('#clearBtn').onclick=()=>{if(confirm('Start a new week? This clears the days and summary but keeps your weekly goals text.')){
+  $$('.r input:not([type=checkbox]),.win input,.meta input:not(#dl)').forEach(i=>i.value='');
+  $$('.ck').forEach(c=>c.checked=false);$$('.star').forEach(s=>{s.textContent='☆';s.setAttribute('aria-pressed','false');});
+  $$('.tick').forEach(b=>b.setAttribute('aria-checked','false'));$$('td.sr').forEach(t=>setRate(t,0));recalc();save(true);}};
+
+
+/* ---- optional Google account ---- */
+const GOOGLE_CLIENT_ID=''; // paste your Google OAuth Client ID here to turn on Google sign-in
+const jwt=t=>JSON.parse(decodeURIComponent(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+function showAcct(msg){let u=null;try{u=JSON.parse(localStorage.getItem('sp_user'));}catch(e){}
+  $('#acctTxt').textContent=msg||(u?'Signed in as '+u.name+' ('+u.email+')':'You are using the planner without an account.');
+  $('#signOut').hidden=!u;$('#gFallback').hidden=!!u||!!GOOGLE_CLIENT_ID;$('#gbtn').hidden=!!u;}
+function onCred(r){try{const p=jwt(r.credential);localStorage.setItem('sp_user',JSON.stringify({name:p.name,email:p.email}));showAcct();toast('Signed in ✓');}catch(e){toast('Sign-in failed');}}
+$('#gFallback').onclick=()=>showAcct('Google sign-in needs a Client ID. Paste it into GOOGLE_CLIENT_ID near the bottom of index.html.');
+$('#signOut').onclick=()=>{try{localStorage.removeItem('sp_user');}catch(e){}try{google.accounts.id.disableAutoSelect();}catch(e){}showAcct();toast('Signed out');};
+if(GOOGLE_CLIENT_ID){const g=document.createElement('script');g.src='https://accounts.google.com/gsi/client';g.async=true;g.onload=()=>{google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onCred});google.accounts.id.renderButton($('#gbtn'),{theme:'outline',size:'large',text:'continue_with'});};document.head.appendChild(g);}
+showAcct();
+
+/* open on today's page the first time each day */
+if(localStorage.getItem('sp_day')!==String(new Date().toDateString())){try{localStorage.setItem('sp_day',new Date().toDateString());}catch(e){}
+  P[0].hidden=true;cur=today+1;P[cur].hidden=false;mark();}
+
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
-  </html>
+</html>
