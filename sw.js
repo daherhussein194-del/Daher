@@ -1,29 +1,41 @@
-const CACHE = 'study-planner-v3';
-const SHELL = ['./', './index.html', './manifest.webmanifest',
-  './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+const CACHE='study-planner-v3';
+const FILES=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png'];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
 });
 
-self.addEventListener('activate', e => {
+self.addEventListener('activate',e=>{
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
+      .then(k=>Promise.all(k.filter(n=>n!==CACHE).map(n=>caches.delete(n))))
+      .then(()=>self.clients.claim())
   );
 });
 
-// Online: always get the newest files. Offline: use the saved copy.
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
+self.addEventListener('fetch',e=>{
+  const r=e.request;
+  if(r.method!=='GET')return;
+  const url=new URL(r.url);
+  if(url.hostname==='accounts.google.com')return;
+  const page=r.mode==='navigate'||url.pathname.endsWith('.html')||url.pathname.endsWith('/');
+  if(page){
+    e.respondWith(
+      fetch(r).then(res=>{
+        const copy=res.clone();
+        caches.open(CACHE).then(c=>c.put(r,copy));
+        return res;
+      }).catch(()=>caches.match(r).then(m=>m||caches.match('index.html')))
+    );
+    return;
+  }
   e.respondWith(
-    fetch(e.request).then(res => {
-      if (res && (res.ok || res.type === 'opaque')) {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
+    caches.match(r).then(m=>m||fetch(r).then(res=>{
+      if(res.ok||res.type==='opaque'){
+        const copy=res.clone();
+        caches.open(CACHE).then(c=>c.put(r,copy));
       }
       return res;
-    }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
+    }).catch(()=>m))
   );
 });
